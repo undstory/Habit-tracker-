@@ -1,12 +1,19 @@
 <template>
     <div class="log">
         <button class="log__close" @click="shutUp">X</button>
+        <login />
     </div>
 </template>
 
 <script>
+
+import Login from './Login'
+
 export default {
     name: 'Log',
+     components: {
+    Login
+  },
     data() {
         return {
 
@@ -31,6 +38,7 @@ export default {
     margin: 3rem auto;
     height: 20rem;
     background-color: white;
+    position: relative;
 
     &__close {
         border-radius: 5px;
