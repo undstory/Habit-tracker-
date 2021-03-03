@@ -33,21 +33,37 @@ export default {
         register(payload) {
             return this.createNewUser(payload)
         },
+        login(payload) {
+            return this.signIn(payload)
+        },
         loginOrRegister() {
             let promise;
+            const loginPayload = {
+                email: this.email,
+                password: this.password
+            };
             if(this.newUser) {
                 promise = this.register({
-                    name: this.name,
-                    email: this.email,
-                    password: this.password
+                name: this.name,
+                ...loginPayload    
                 })
+            } else {
+                promise = this.login(loginPayload)
             }
             promise 
                 .then(() => {
                     this.$router.push('/MainView')
+                    .catch(error => {
+                        if(error.name != "NavigationDuplicated") {
+                            throw error;
+                        }
+                    })
+                })
+                .catch((error) => {
+                    this.error = error;
                 })
         },
-        ...mapActions(['createNewUser']),
+        ...mapActions(['createNewUser', 'signIn']),
     }
 }
 </script>

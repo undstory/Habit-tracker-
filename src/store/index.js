@@ -32,11 +32,15 @@ export default new Vuex.Store({
       state.id = id;
       state.name = name;
       state.email = email;
+    },
+    afterErrorAuth(state) {
+      state.loading.login = false;
     }
+
   },
   actions: {
     createNewUser({ commit }, payload) {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         commit('beforeAuth');
         firebase
           .auth()
@@ -48,9 +52,31 @@ export default new Vuex.Store({
             });
             resolve();
           })
+          .catch((error) => {
+            commit('afterErrorAuth');
+            reject(error.message);
+          })
+      })
+    },
+    signIn({ commit }, payload) {
+      return new Promise((resolve, reject) => {
+        commit('beforeAuth');
+        firebase
+          .auth()
+          .signInWithEmailAndPassword(payload.email, payload.password)
+          .then((response) => {
+            commit('afterAuth', {
+              id: response.id,
+              ...payload
+            });
+            resolve();
+          })
+          .catch((error) => {
+            commit('afterErrorAuth');
+            reject(error.message);
+          })
       })
     }
-  },
-  modules: {
   }
+  
 })
