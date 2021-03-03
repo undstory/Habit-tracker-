@@ -4,14 +4,17 @@
             <label>Are you a new User?</label> 
             <input type="checkbox" class="login__input" v-model="newUser"/>
             <input type="text" class="login__input" v-if="newUser" v-model="name" placeholder="Name">
-            <input type="email" class="login__input" placeholder="E-mail"/>
-            <input type="password" class="login__input" placeholder="Password"/>
-            <button type="submit" class="login__btn" @click="loginOrRegister">{{ newUser ? 'Register' : 'Login'}}</button>
+            <input type="email" v-model="email" class="login__input" placeholder="E-mail"/>
+            <input type="password" v-model="password" class="login__input" placeholder="Password"/>
+            <button type="submit" :loading="loader" class="login__btn" @click="loginOrRegister">{{ newUser ? 'Register' : 'Login'}}</button>
         </form>
     </div>
 </template>
 
 <script>
+
+import { mapGetters, mapActions } from 'vuex';
+
 export default {
     name: 'Login',
     data() {
@@ -22,10 +25,29 @@ export default {
             password: ''
         }
     },
+    computed: {
+        ...mapGetters(['loader'])
+    },
     methods: {
+        
+        register(payload) {
+            return this.createNewUser(payload)
+        },
         loginOrRegister() {
-            console.log('Działa');
-        }
+            let promise;
+            if(this.newUser) {
+                promise = this.register({
+                    name: this.name,
+                    email: this.email,
+                    password: this.password
+                })
+            }
+            promise 
+                .then(() => {
+                    this.$router.push('/MainView')
+                })
+        },
+        ...mapActions(['createNewUser']),
     }
 }
 </script>
