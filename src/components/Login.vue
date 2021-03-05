@@ -3,20 +3,24 @@
         <form method="post" class="login__form" @submit.prevent="loginOrRegister">
             <label>Are you a new User?</label> 
             <input type="checkbox" class="login__input" v-model="newUser"/>
-            <input type="text" class="login__input" v-if="newUser" v-model="name" placeholder="Name">
+            <input type="text" name="name" class="login__input" v-if="newUser" v-model.trim="name" placeholder="Name">
             <input type="email" v-model="email" class="login__input" placeholder="E-mail"/>
             <input type="password" v-model="password" class="login__input" placeholder="Password"/>
-            <button type="submit" :loading="loader" class="login__btn" @click="loginOrRegister">{{ newUser ? 'Register' : 'Login'}}</button>
+            <button type="submit" :loading="loader" class="login__btn" @click="loginOrRegister ">{{ newUser ? 'Register' : 'Login'}}</button>
         </form>
+        <div class="error__box"></div>
     </div>
 </template>
 
 <script>
 
 import { mapGetters, mapActions } from 'vuex';
+import { validationMixin } from 'vuelidate';
+import { required, minLength, maxLength, email, password } from 'vuelidate/lib/validators'
 
 export default {
     name: 'Login',
+    mixins: [validationMixin],
     data() {
         return {
             newUser: false,
@@ -25,10 +29,30 @@ export default {
             password: ''
         }
     },
+    validations: {
+        name: {
+            required,
+            minLength: minLength(3),
+            maxLenth: maxLength(15)
+        },
+        email: {
+            required,
+            email
+        },
+        password: {
+            required,
+            password
+        }
+    },
     computed: {
         ...mapGetters(['loader'])
     },
     methods: {
+
+        setName(value) {
+            this.name = value;
+            this.$v.name.$touch();
+        },
         
         register(payload) {
             return this.createNewUser(payload)
@@ -36,7 +60,17 @@ export default {
         login(payload) {
             return this.signIn(payload)
         },
+        showError(error) {
+            const errorBox = document.querySelector('.error__box');
+            errorBox.innerHTML = error;
+            errorBox.style.display = 'block';
+
+            setTimeout(() => {
+                errorBox.style.display = 'none';
+            }, 5000)
+        },
         loginOrRegister() {
+            
             let promise;
             const loginPayload = {
                 email: this.email,
@@ -59,9 +93,8 @@ export default {
                         }
                     })
                 })
-                .catch((error) => {
-                    this.error = error;
-                })
+                .catch(this.showError);
+            
         },
         ...mapActions(['createNewUser', 'signIn']),
     }
@@ -107,6 +140,14 @@ export default {
       }
     }    
     
+}
+
+.errors {
+    border: 3px solid red;
+    &__text {
+        font-weight: bold;
+        color: red;
+    }
 }
 
 </style>
