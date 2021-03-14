@@ -7,7 +7,7 @@
         </div>
         <p class="habit__name">List of habits:</p>
         <ul class="habit__list">
-            <li class="habit__item" v-for="habit in habits" :key="habit"><a class="habit__item--link">{{ habit }}</a></li>
+            <li class="habit__item" v-for="habit in habits" :key="habit" @click="setThisHabit(habit)"><a class="habit__item--link" >{{ habit }}</a></li>
         </ul>
     </div>
 </template>
@@ -30,6 +30,9 @@ export default {
                 this.newHabit = '';
                 console.log(this.habits);
             }
+        },
+        setThisHabit(habit) {
+            this.$emit('myHabit', habit)
         }
     }
 }
