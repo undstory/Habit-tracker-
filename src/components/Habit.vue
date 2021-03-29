@@ -15,8 +15,12 @@
         
         <div class="habit__inputs">
             <ul v-for="input of inputs" :key="input.id">
-                <li class="habit__item">{{ input.name }} <input type="checkbox" v-model ="input.done" :checkedInputs="checkedInputs" class="habit__input" /></li> 
+                <li class="habit__item">{{ input.name }} <input type="checkbox" v-model ="input.done" @change="updateInputs(input)" class="habit__input" /></li> 
             </ul>            
+        </div>
+
+        <div class="habit__resume">
+            You have already completed {{ percent }} percent of the plan !
         </div>
 
         <div class="habit__form">
@@ -101,7 +105,8 @@ export default {
     data() {
         return {
             progressBarValue: 0,
-            inputs: [ {id: 1, name: "1", done: true}, {id: 2, name: "2", done: false}, {id: 3, name: "3", done: false}, {id: 4, name: "4", done: false}, {id: 5, name: "5", done: false},
+            percent: 0,
+            inputs: [ {id: 1, name: "1", done: false}, {id: 2, name: "2", done: false}, {id: 3, name: "3", done: false}, {id: 4, name: "4", done: false}, {id: 5, name: "5", done: false},
             {id: 6, name: "6", done: false}, {id: 7, name: "7", done: false}, {id: 8, name: "8", done: false}, {id: 9, name: "9", done: false}, {id: 10, name: "10", done: false},
             {id: 11, name: "11", done: false}, {id: 12, name: "12", done: false}, {id: 13, name: "13", done: false}, {id: 14, name: "14", done: false}, {id: 15, name: "15", done: false},
             {id: 16, name: "16", done: false}, {id: 17, name: "17", done: false}, {id: 18, name: "18", done: false}, {id: 19, name: "19", done: false}, {id: 20, name: "20", done: false},
@@ -121,25 +126,30 @@ export default {
             return { width: this.progressBarValue + 'rem'};
         },
 
-        
+ 
+     
+           
        
     },
     methods: {
-            
            
+         updateInputs(input) {
+           if(input.done == true) {
+             this.progressBarValue +=1;
+           } else {
+             this.progressBarValue -=1;
+           }
+
+           this.updatePercent(); 
+       },
+
+              updatePercent() {
+
+            this.percent = ((parseInt(this.progressBarValue)/30)*100).toFixed(0); 
+        
+        }
             
-        },
-    created(): 
-        checkedInputs() {
-            this.checkedInputsArray = this.inputs.map(el => {
-                return el.done === true;
-            })
-            console.log(this.checkedInputsArray);
-            return this.checkedInputsArray; 
-        }  
-    
-       
-    
+        }
 }
 </script>
 <style lang="scss" scoped>
